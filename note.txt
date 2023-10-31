@@ -1,0 +1,1 @@
+npm i express express-validator jsonwebtoken prisma bcrypt cors dotenv
