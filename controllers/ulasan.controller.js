@@ -35,7 +35,10 @@ module.exports = {
     },
     showAll: async(req, res, next)=>{
         try {
-            const data = await ulasan.findMany();
+            const data = await ulasan.findMany({
+                skip: 0,
+                take: 4
+            });
             return res.status(200).json({
                 data
             })

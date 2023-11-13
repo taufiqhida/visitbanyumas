@@ -108,7 +108,6 @@ model Wisata {
   Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
   kecamatanId      Int
   Image            Image[]
-  hotelId          Int?
   wisata_has_hotel wisata_has_hotel[]
   Fasilitas        Fasilitas?         @relation(fields: [fasilitasId], references: [id])
   fasilitasId      Int?
