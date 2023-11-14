@@ -79,7 +79,6 @@ model Hotel {
   nohp             BigInt
   harga_min        BigInt
   harga_max        BigInt
-  idFasilitas      Int
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
   Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
@@ -101,8 +100,6 @@ model Wisata {
   nohp             BigInt
   harga_min        BigInt
   harga_max        BigInt
-  idImage          Int
-  idFasilitas      Int
   kecamatanId      Int
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
