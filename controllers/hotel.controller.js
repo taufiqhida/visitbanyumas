@@ -3,8 +3,14 @@ const {hotel} = require("../models")
 module.exports={
     create: async(req, res, next)=>{
         try {
-            
-        } catch (error) {
+            const {title, deskripsi, linkmap, alamat, nohp, harga_min, harga_max} = req.body
+            const newHotel = await hotel.create({
+                data : {
+                    
+                }
+            })
+
+            } catch (error) {
             return next(error)
         }
     }

@@ -103,10 +103,10 @@ model Wisata {
   harga_max        BigInt
   idImage          Int
   idFasilitas      Int
+  kecamatanId      Int
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
   Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
-  kecamatanId      Int
   Image            Image[]
   wisata_has_hotel wisata_has_hotel[]
   fasilitas        Fasilitas[]
