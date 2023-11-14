@@ -61,9 +61,10 @@ model Fasilitas {
   nama      String
   is_active Boolean @map("is_active")
   jumlah    Int
-
-  hotel  Hotel[]
-  wisata Wisata[]
+  Hotel     Hotel?  @relation(fields: [hotelId], references: [id])
+  hotelId   Int?
+  Wisata    Wisata? @relation(fields: [wisataId], references: [id])
+  wisataId  Int?
 
   @@map("fasilitas")
 }
@@ -85,8 +86,7 @@ model Hotel {
   kecamatanId      Int
   image            Image[]
   wisata_has_hotel wisata_has_hotel[]
-  Fasilitas        Fasilitas?         @relation(fields: [fasilitasId], references: [id])
-  fasilitasId      Int?
+  fasilitas        Fasilitas[]
 
   @@map("hotels")
 }
@@ -109,8 +109,7 @@ model Wisata {
   kecamatanId      Int
   Image            Image[]
   wisata_has_hotel wisata_has_hotel[]
-  Fasilitas        Fasilitas?         @relation(fields: [fasilitasId], references: [id])
-  fasilitasId      Int?
+  fasilitas        Fasilitas[]
 
   @@map("wisatas")
 }
