@@ -46,11 +46,11 @@ model Kecamatan {
 model Image {
   id       Int    @id @default(autoincrement())
   nama     String
-  idHotel  Int
-  idWisata Int
+  hotelId  Int?
+  wisataId Int?
 
-  hotel  Hotel  @relation(fields: [idHotel], references: [id])
-  wisata Wisata @relation(fields: [idWisata], references: [id])
+  hotel  Hotel?  @relation(fields: [hotelId], references: [id])
+  wisata Wisata? @relation(fields: [wisataId], references: [id])
 
   @@map("images")
 }
@@ -104,7 +104,7 @@ model Wisata {
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
   Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
-  Image            Image[]
+  image            Image[]
   wisata_has_hotel wisata_has_hotel[]
   fasilitas        Fasilitas[]
 
@@ -112,10 +112,10 @@ model Wisata {
 }
 
 model wisata_has_hotel {
-  id       Int @id @default(autoincrement())
-  hotelId  Int
-  wisataId Int
+  id       Int  @id @default(autoincrement())
+  hotelId  Int?
+  wisataId Int?
 
-  hotel  Hotel  @relation(fields: [hotelId], references: [id])
-  wisata Wisata @relation(fields: [wisataId], references: [id])
+  hotel  Hotel?  @relation(fields: [hotelId], references: [id])
+  wisata Wisata? @relation(fields: [wisataId], references: [id])
 }

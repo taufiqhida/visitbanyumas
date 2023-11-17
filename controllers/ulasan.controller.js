@@ -46,7 +46,7 @@ module.exports = {
             return next(error)
         }
     },
-    update : async(req, res)=>{
+    update : async(req, res, next)=>{
         try {
             const updateUlasan = await ulasan.update({
                 where : {

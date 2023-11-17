@@ -1,10 +1,10 @@
-const {hotel} = require("../models")
+const {wisata} = require("../models")
 
 module.exports={
     create: async(req, res, next)=>{
         try {
             const {title, deskripsi, linkmap, alamat, nohp, harga_min, harga_max, kecamatanId} = req.body
-            const newHotel = await hotel.create({
+            const newWisata = await wisata.create({
                 data : {
                     title,
                     deskripsi,
@@ -17,14 +17,14 @@ module.exports={
                     image : {
                         create: {
                             nama : req.body.nama,
-                            idHotel : req.body.idHotel,
-                            idWisata : req.body.idWisata
+                            idwisata : req.body.idwisata,
+                            hotelId : req.body.hotelId
                         }
                     },
-                    wisata_has_hotel:{
+                    wisata_has_wisata:{
                         create:{
-                            hotelId : req.body.hotelId,
-                            wisaraId : req.body.wisaraId
+                            wisataId : req.body.wisataId,
+                            hotelId : req.body.hotelId
                         }
                     },
                     fasilitas :{
@@ -36,44 +36,44 @@ module.exports={
                 }
             })
             res.status(200).json({
-                newHotel
+                newWisata
             })
             } catch (error) {
             return next(error)
         }
     },
-    getHotelAll: async(req, res, next)=>{
+    getwisataAll: async(req, res, next)=>{
         try {
-            const getAllHotel = await hotel.findMany({
+            const getAllwisata = await wisata.findMany({
                 skip: 0,
                 take: 10
             });
             return res.status(200).json({
-                getAllHotel
+                getAllwisata
             })
         } catch (error) {
             return next(error)
         }
     },
-    getHotel: async(req, res, next)=>{
+    getwisata: async(req, res, next)=>{
         try {
-          const getHotel = await hotel.findFirst({
+          const getwisata = await wisata.findFirst({
             where:{
                 id: parseInt(req.params.id)
             }
           })
           
           return res.status(200).json({
-            getHotel
+            getwisata
           })
         } catch (error) {
             return next(200)
         }
     },
-    updateHotel : async(req, res, next) =>{
+    updatewisata : async(req, res, next) =>{
         try {
             const {title, deskripsi, linkmap, alamat, nohp, harga_min, harga_max, kecamatanId} = req.body
-            const updateHotel = await hotel.update({
+            const updatewisata = await wisata.update({
                 where:{
                     id: parseInt(req.params.id)
                 },
@@ -92,16 +92,16 @@ module.exports={
             
         }
     },
-    destroyHotel : async(req, res, next)=>{
+    destroywisata : async(req, res, next)=>{
         try {
-            const hpsHotel = await ulasan.delete({
+            const hpswisata = await ulasan.delete({
                 where: {
                     id: parseInt(req.params.id)
                 }
             })
 
             return res.status(200).json({
-                hpsHotel
+                hpswisata
             })
         } catch (error) {
             return next(error)
