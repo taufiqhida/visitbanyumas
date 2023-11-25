@@ -14,26 +14,7 @@ module.exports={
                     harga_min,
                     harga_max,
                     kecamatanId,
-                    slug : req.body.title.replace(/\s+/g, "-"),
-                    image : {
-                        create: {
-                            nama : req.body.nama,
-                            idHotel : req.body.idHotel,
-                            idWisata : req.body.idWisata
-                        }
-                    },
-                    wisata_has_hotel:{
-                        create:{
-                            hotelId : req.body.hotelId,
-                            wisaraId : req.body.wisaraId
-                        }
-                    },
-                    fasilitas :{
-                        create:{
-                            nama: req.body.nama,
-                            is_active : req.body.is_active
-                        }
-                    }
+                    slug : req.body.title.replace(/\s+/g, "-")
                 }
             })
             res.status(200).json({
@@ -88,11 +69,6 @@ module.exports={
                     harga_max,
                     kecamatanId,
                     slug : req.body.title.replace(/\s+/g, "-"),
-                },
-                include : {
-                    image : true,
-                    wisata_has_wisata : true,
-                    fasilitas: true
                 }
             })
             return res.status(200).json({
