@@ -5,7 +5,7 @@ const express = require("express"),
 router.post("/create", controller.create)
 router.post("/update/:id", controller.update)
 router.get("/get/:id", controller.getKecamatan)
-router.post("/:id", controller.destroy)
+router.delete("/:id", controller.destroy)
 // router.get("/", controller.showAll)
 
 module.exports=router
