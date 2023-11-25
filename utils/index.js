@@ -1,4 +1,5 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt'),
+        ImageKit = require('imagekit');
 
 const cryptPassword = async (password)=>{
     const salt = await bcrypt.genSalt(5);
@@ -13,11 +14,10 @@ const exlcude = (model, keys) => {
 
 module.exports = {
     cryptPassword,
+    imageKit: new ImageKit({
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_SECRET_KEY,
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
+    }),
     exlcude
 }
-
-// imageKit: new ImageKit({
-//     publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-//     privateKey: process.env.IMAGEKIT_SECRET_KEY,
-//     urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
-// }),

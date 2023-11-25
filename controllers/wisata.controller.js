@@ -14,6 +14,7 @@ module.exports={
                     harga_min,
                     harga_max,
                     kecamatanId,
+                    slug : req.body.title.replace(/\s+/g, "-"),
                     image : {
                         create: {
                             nama : req.body.nama,
@@ -33,6 +34,11 @@ module.exports={
                             is_active : req.body.is_active
                         }
                     }
+                },
+                include : {
+                    image : true,
+                    wisata_has_wisata : true,
+                    fasilitas: true
                 }
             })
             res.status(200).json({
@@ -85,9 +91,14 @@ module.exports={
                     nohp,
                     harga_min,
                     harga_max,
-                    kecamatanId
+                    kecamatanId,
+                    slug : req.body.title.replace(/\s+/g, "-"),
                 }
             })
+            return res.status(200).json({
+                updatewisata
+              })
+
         } catch (error) {
             
         }
