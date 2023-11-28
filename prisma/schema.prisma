@@ -35,7 +35,7 @@ model Ulasan {
 model Kecamatan {
   id   Int    @id @default(autoincrement())
   nama String
-  slug String
+  slug String @unique
 
   hotel  Hotel[]
   wisata Wisata[]
@@ -45,10 +45,12 @@ model Kecamatan {
 
 // table
 model Image {
-  id       Int    @id @default(autoincrement())
-  nama     String
-  hotelId  Int?
-  wisataId Int?
+  id         Int    @id @default(autoincrement())
+  idImagekit String @unique
+  nama       String
+  url        String
+  hotelId    Int?
+  wisataId   Int?
 
   hotel  Hotel?  @relation(fields: [hotelId], references: [id])
   wisata Wisata? @relation(fields: [wisataId], references: [id])
@@ -74,7 +76,7 @@ model Fasilitas {
 model Hotel {
   id               Int                @id @default(autoincrement())
   title            String
-  slug             String
+  slug             String             @unique
   deskripsi        String
   linkmap          String
   alamat           String
@@ -96,7 +98,7 @@ model Hotel {
 model Wisata {
   id               Int                @id @default(autoincrement())
   title            String
-  slug             String
+  slug             String             @unique
   deskripsi        String
   linkmap          String
   alamat           String

@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt'),
-        ImageKit = require('imagekit');
+        ImageKit = require('imagekit'),
+        slugify = require("slugify")
 
 const cryptPassword = async (password)=>{
     const salt = await bcrypt.genSalt(5);
@@ -11,7 +12,14 @@ const exlcude = (model, keys) => {
         Object.entries(model).filter(([key]) => !keys.includes(key))
     );
 }
-
+const createSlug= async (data) => {
+        try {
+            const dataSlug = await slugify(data, { lower: true, remove: /[*+~.()'"!:@]/g })
+            return dataSlug
+        } catch (error) {
+            console.log(error)
+        }
+    }
 module.exports = {
     cryptPassword,
     imageKit: new ImageKit({
@@ -19,5 +27,6 @@ module.exports = {
     privateKey: process.env.IMAGEKIT_SECRET_KEY,
     urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
     }),
-    exlcude
+    exlcude,
+    createSlug
 }

@@ -1,12 +1,15 @@
-const {kecamatan} = require("../models")
+const {kecamatan} = require("../models"),
+    utils= require("../utils")
 
 module.exports = {
     create: async (req, res, next)=>{
         try {
+            const {nama} = req.body
+            const nameSlug = await utils.createSlug(nama)
             const data = await kecamatan.create({
                 data : {
-                    nama : req.body.nama,
-                    slug: req.body.title.replace(/\s+/g, "-"),
+                    nama : nama,
+                    slug: nameSlug
                 }
             })
 

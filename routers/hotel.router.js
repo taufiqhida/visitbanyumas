@@ -2,7 +2,7 @@ const express = require("express"),
     router = express.Router(),
     controller = require("../controllers/hotel.controller")
 
-router.post("/create", controller.create)
+router.post("/create",controller.upload.array('image'), controller.create)
 router.post("/update/:id", controller.updateHotel)
 router.get("/get/:id", controller.getHotel)
 router.delete("/:id", controller.destroyHotel)
