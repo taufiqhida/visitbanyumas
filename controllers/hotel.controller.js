@@ -94,7 +94,7 @@ module.exports={
             if (kecamatan) {
                 const kecamatans = Array.isArray(kecamatan) ? kecamatan : [kecamatan]
                 whereCondition = {
-                    courseCategory: {
+                    inKecamatan: {
                         slug: {
                             in: kecamatans
                         }
@@ -124,7 +124,6 @@ module.exports={
                 take: parseInt(limit),
                 skip: skip,
                 where: whereCondition,
-                data,
                 orderBy: orderByCondition,
             });
             const resultCount = await hotel.count({ where: whereCondition })
@@ -136,7 +135,7 @@ module.exports={
             }
 
             if (kecamatan) {
-                message += ` berdasarkan kategori '${kecamatan}'`
+                message += ` berdasarkan kecamatan '${kecamatan}'`
             }
             if (popular) {
                 message += ` berdasarkan popular`
@@ -147,27 +146,32 @@ module.exports={
             }
 
             if (resultCount === 0) {
-                return res.status(404).json("Tidak ada data course")
+                return res.status(404).json("Tidak ada data Hotel")
             }
 
             const data =  getAllHotel.map((hotel)=>{
                 return{
                     id: hotel.id,
                     title : hotel.title,
-                    slug: hotel.slug
+                    slug: hotel.slug,
+                    deskripsi: hotel.deskripsi,
+                    linkmap: hotel.linkmap,
+                    alamat: hotel.alamat,
+                    nohp : parseInt(hotel.nohp),
+                    harga_min : parseInt(hotel.harga_min),
+                    harga_max : parseInt(hotel.harga_max),
                 }
             })
 
-            return res.status(200).json((
-                message,
-                data,
-                {
-                    currentPage: parseInt(page),
-                    totalPage: totalPage,
-                    totalData: resultCount,
-
-                }
-            ))
+            return res.status(200).json({
+            message: message,
+            data: data,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPage: totalPage,
+                totalData: resultCount,
+            }
+        });
         } catch (error) {
             return next(error)
         }
@@ -179,6 +183,9 @@ module.exports={
                 id: parseInt(req.params.id)
             }
           })
+          if(!getHotel){
+              return res.status(404).json(`Tidak ada hotel`)
+          }
           
           return res.status(200).json({
             getHotel
