@@ -1,4 +1,4 @@
-const {hotel} = require("../models"),
+const {hotel, image} = require("../models"),
     multer = require('multer'),
     path = require('path'),
     utils= require("../utils")
@@ -37,7 +37,7 @@ module.exports={
                       file: strFile,
                     });
 
-                    const gambar = await prisma.image.create({
+                    const images = await image.create({
                       data: {
                         idImagekit: fileId,
                         nama: nama + path.extname(file.originalname),
@@ -46,7 +46,7 @@ module.exports={
                       },
                     });
 
-            return gambar;
+            return images;
           });
 
           return Promise.all(gambarPromises);
@@ -55,7 +55,6 @@ module.exports={
         }
       };
         const nameSlug = await utils.createSlug(title)
-            console.log(nameSlug)
 
             const newHotel = await hotel.create({
                 data : {
@@ -67,7 +66,8 @@ module.exports={
                     harga_min : harga_min,
                     harga_max: harga_max,
                     kecamatanId : parseInt(req.body.kecamatanId),
-                    slug : nameSlug
+                    slug : nameSlug,
+                    image: images
                 }
             })
 
@@ -83,13 +83,91 @@ module.exports={
     },
     getHotelAll: async(req, res, next)=>{
         try {
+            let { page = 1, limit = 10, search, kecamatan, popular,  latest } = req.query
+            let skip = ( page - 1 ) * limit
+            let whereCondition = {}
+            if (search) {
+                whereCondition.OR = [
+                  { title: { contains: search } },
+                ]
+            }
+            if (kecamatan) {
+                const kecamatans = Array.isArray(kecamatan) ? kecamatan : [kecamatan]
+                whereCondition = {
+                    courseCategory: {
+                        slug: {
+                            in: kecamatans
+                        }
+                    }
+                }
+            }
+            let orderByCondition = []
+
+            if(latest) {
+                orderByCondition = [
+                    {
+                        createdAt: 'desc'
+                    }
+                ]
+            }
+            if(popular) {
+                orderByCondition = [
+                    {
+                        taken: 'desc'
+                    }
+                ]
+            }
+
+
+
             const getAllHotel = await hotel.findMany({
-                skip: 0,
-                take: 10
+                take: parseInt(limit),
+                skip: skip,
+                where: whereCondition,
+                data,
+                orderBy: orderByCondition,
             });
-            return res.status(200).json({
-                getAllHotel
+            const resultCount = await hotel.count({ where: whereCondition })
+            const totalPage = Math.ceil(resultCount / limit)
+            let message = "Berhasil mengambil data hotel"
+
+            if (search) {
+                message += ` berdasarkan kata kunci '${search}'`
+            }
+
+            if (kecamatan) {
+                message += ` berdasarkan kategori '${kecamatan}'`
+            }
+            if (popular) {
+                message += ` berdasarkan popular`
+            }
+
+            if (latest) {
+                message += ` berdasarkan terbaru`
+            }
+
+            if (resultCount === 0) {
+                return res.status(404).json("Tidak ada data course")
+            }
+
+            const data =  getAllHotel.map((hotel)=>{
+                return{
+                    id: hotel.id,
+                    title : hotel.title,
+                    slug: hotel.slug
+                }
             })
+
+            return res.status(200).json((
+                message,
+                data,
+                {
+                    currentPage: parseInt(page),
+                    totalPage: totalPage,
+                    totalData: resultCount,
+
+                }
+            ))
         } catch (error) {
             return next(error)
         }
@@ -112,6 +190,7 @@ module.exports={
     updateHotel : async(req, res, next) =>{
         try {
             const {title, deskripsi, linkmap, alamat, nohp, harga_min, harga_max, kecamatanId} = req.body
+                    const nameSlug = await utils.createSlug(title)
             const updateHotel = await hotel.update({
                 where:{
                     id: parseInt(req.params.id)
@@ -156,4 +235,35 @@ module.exports={
             return next(error)
         }
     }
+}
+
+
+async function uploadFiles(files, hotelId, hotelTitle) {
+    const uploadedImages = [];
+
+    for (const file of files) {
+        try {
+            let strFile = file.buffer.toString("base64");
+
+            let { url, fileId } = await utils.imageKit.upload({
+                fileName: Date.now() + path.extname(file.originalname),
+                file: strFile,
+            });
+
+            const imageRecord = await image.create({
+                data: {
+                    idImagekit: fileId,
+                    nama: hotelTitle + path.extname(file.originalname),
+                    url,
+                    hotelId: hotelId,
+                },
+            });
+
+            uploadedImages.push(imageRecord);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    return uploadedImages;
 }
