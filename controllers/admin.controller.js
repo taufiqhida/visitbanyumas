@@ -7,6 +7,9 @@ const secret_key = process.env.JWT_KEY || "no_secret"
 
 module.exports = {
     register: async(req, res, next)=>{
+        console.log('====================================');
+        console.log(req.body);
+        console.log('====================================');
         try {
             const adminUser   = await admin.create({
                 data : {
