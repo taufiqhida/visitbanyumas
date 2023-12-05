@@ -49,11 +49,12 @@ model Image {
   idImagekit String @unique
   nama       String
   url        String
+  Hotel     Hotel?  @relation(fields: [hotelId], references: [id])
   hotelId    Int?
+  Wisata Wisata? @relation(fields: [wisataId], references: [id])
   wisataId   Int?
 
-  hotel  Hotel?  @relation(fields: [hotelId], references: [id])
-  wisata Wisata? @relation(fields: [wisataId], references: [id])
+
 
   @@map("images")
 }

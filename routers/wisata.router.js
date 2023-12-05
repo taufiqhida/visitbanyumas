@@ -1,11 +1,16 @@
-const express = require("express"),
-    router = express.Router(),
-    controller = require("../controllers/wisata.controller")
+const express = require("express");
+const router = express.Router();
+const upload = require('../middlewares/multerMiddleware');
+// Import the controller for hotel routes
+const controller = require("../controllers/wisataController");
 
-router.post("/create", controller.create)
-router.post("/update/:id", controller.updateWisata)
-router.get("/get/:id", controller.getHotel)
-router.delete("/:id", controller.destroyWisata)
-router.get("/", controller.getWisataAll)
 
-module.exports=router
+// Define your routes using the controller methods
+router.get("/", controller.getAllWisatas);
+router.get("/:id", controller.getWisataById);
+router.post("/",upload.single("image"), controller.createWisata);
+router.put("/:id", upload.single("image"), controller.updateWisata);
+router.delete("/:id", controller.deleteWisata);
+
+
+module.exports = router;
