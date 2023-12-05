@@ -27,14 +27,14 @@ ADD COLUMN     "wisataId" INTEGER;
 ALTER TABLE "wisata_has_hotel" ALTER COLUMN "hotelId" DROP NOT NULL,
 ALTER COLUMN "wisataId" DROP NOT NULL;
 
--- AddForeignKey
-ALTER TABLE "images" ADD CONSTRAINT "images_hotelId_fkey" FOREIGN KEY ("hotelId") REFERENCES "hotels"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- -- AddForeignKey
+-- ALTER TABLE "images" ADD CONSTRAINT "images_hotelId_fkey" FOREIGN KEY ("hotelId") REFERENCES "hotels"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE "images" ADD CONSTRAINT "images_wisataId_fkey" FOREIGN KEY ("wisataId") REFERENCES "wisatas"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- -- AddForeignKey
+-- ALTER TABLE "images" ADD CONSTRAINT "images_wisataId_fkey" FOREIGN KEY ("wisataId") REFERENCES "wisatas"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE "wisata_has_hotel" ADD CONSTRAINT "wisata_has_hotel_hotelId_fkey" FOREIGN KEY ("hotelId") REFERENCES "hotels"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- -- AddForeignKey
+-- ALTER TABLE "wisata_has_hotel" ADD CONSTRAINT "wisata_has_hotel_hotelId_fkey" FOREIGN KEY ("hotelId") REFERENCES "hotels"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE "wisata_has_hotel" ADD CONSTRAINT "wisata_has_hotel_wisataId_fkey" FOREIGN KEY ("wisataId") REFERENCES "wisatas"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- -- AddForeignKey
+-- ALTER TABLE "wisata_has_hotel" ADD CONSTRAINT "wisata_has_hotel_wisataId_fkey" FOREIGN KEY ("wisataId") REFERENCES "wisatas"("id") ON DELETE SET NULL ON UPDATE CASCADE;
