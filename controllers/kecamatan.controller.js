@@ -2,6 +2,15 @@ const {kecamatan} = require("../models"),
     utils= require("../utils")
 
 module.exports = {
+    getAll : async(req, res, next)=>{
+        try {
+            const data = await kecamatan.findMany();
+
+            return res.status(200).json(data)
+        } catch (error) {
+            next(error)
+        }
+    },
     create: async (req, res, next)=>{
         try {
             const {nama} = req.body
@@ -27,6 +36,7 @@ module.exports = {
                     id : parseInt(req.params.id)
                 }
             })
+            return res.status(200).json(`Berhasil Get ${data}`)
         }catch (error){
             next(error)
         }

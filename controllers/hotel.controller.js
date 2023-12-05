@@ -67,7 +67,7 @@ module.exports={
                     harga_max: harga_max,
                     kecamatanId : parseInt(req.body.kecamatanId),
                     slug : nameSlug,
-                    image: images
+                    image: image
                 }
             })
 
@@ -94,7 +94,7 @@ module.exports={
             if (kecamatan) {
                 const kecamatans = Array.isArray(kecamatan) ? kecamatan : [kecamatan]
                 whereCondition = {
-                    inKecamatan: {
+                    kecamatan: {
                         slug: {
                             in: kecamatans
                         }

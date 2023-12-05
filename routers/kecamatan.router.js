@@ -6,6 +6,6 @@ router.post("/create", controller.create)
 router.post("/update/:id", controller.update)
 router.get("/get/:id", controller.getKecamatan)
 router.delete("/:id", controller.destroy)
-// router.get("/", controller.showAll)
+router.get("/", controller.getAll)
 
 module.exports=router
