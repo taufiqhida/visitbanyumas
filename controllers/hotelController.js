@@ -7,9 +7,28 @@ const path = require("path");
 const utils = require("../utils");
 
 const getAllHotels = async (req, res, next) => {
+  let { page = 1, limit = 10 } = req.query; //menghasilkan string
+  let skip = (page - 1) * limit;
+
   try {
-    const allHotels = await prisma.hotel.findMany();
-    res.status(200).json(allHotels);
+    const allHotels = await prisma.hotel.findMany({
+      take: parseInt(limit),
+      skip: skip,
+    });
+
+    const resultCount = await prisma.hotel.count(); //integer jumlah total data wisata
+
+    //generated total page
+    const totalPage = Math.ceil(resultCount / limit);
+
+    res.status(200).json({
+      success: true,
+      current_page: page - 0, //ini -0 merubah menjadi integer
+      total_page: totalPage,
+      total_data: resultCount,
+      data: allHotels,
+    });
+
   } catch (error) {
     next(error);
   }
@@ -199,9 +218,9 @@ const deleteHotel = async (req, res, next) => {
       return res.status(404).json({ message: "Hotel not found" });
     }
     res.status(202).json({
-     status: true,
-     message: "Deleted data hotel sucessfully",
-   });
+      status: true,
+      message: "Deleted data hotel sucessfully",
+    });
   } catch (error) {
     next(error);
   }
