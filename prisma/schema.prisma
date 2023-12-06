@@ -101,15 +101,19 @@ model Fasilitas {
 
 // table
 model Hotel {
-  id               Int                @id @default(autoincrement())
-  title            String
-  slug             String             @unique
-  deskripsi        String
-  linkmap          String
-  alamat           String
-  nohp             BigInt
-  harga_min        BigInt
-  harga_max        BigInt
+  id        Int      @id @default(autoincrement())
+  title     String
+  slug      String   @unique
+  deskripsi String
+  linkmap   String
+  alamat    String
+  nohp      BigInt
+  harga_min BigInt
+  harga_max BigInt
+  rating    Float
+  check_in  DateTime
+  check_out DateTime
+
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
   Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
@@ -133,6 +137,9 @@ model Wisata {
   nohp             BigInt
   harga_min        BigInt
   harga_max        BigInt
+  rating           Float
+  jam_buka         DateTime
+  jam_tutup        DateTime
   kecamatanId      Int
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
