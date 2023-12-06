@@ -72,29 +72,15 @@ model Image_hotel {
 }
 
 // table
-model Image_fasilitas {
-  id          Int    @id @default(autoincrement())
-  idImagekit  String @unique
-  nama        String
-  url         String
-  fasilitasId Int?
-
-  fasilitas Fasilitas? @relation(fields: [fasilitasId], references: [id])
-
-  @@map("image_fasilitas")
-}
-
-// table
 model Fasilitas {
-  id              Int               @id @default(autoincrement())
-  nama            String
-  is_active       Boolean           @map("is_active")
-  jumlah          Int
-  Hotel           Hotel?            @relation(fields: [hotelId], references: [id])
-  hotelId         Int?
-  Wisata          Wisata?           @relation(fields: [wisataId], references: [id])
-  wisataId        Int?
-  image_fasilitas Image_fasilitas[]
+  id        Int     @id @default(autoincrement())
+  nama      String
+  is_active Boolean @map("is_active")
+  jumlah    Int
+  Hotel     Hotel?  @relation(fields: [hotelId], references: [id])
+  hotelId   Int?
+  Wisata    Wisata? @relation(fields: [wisataId], references: [id])
+  wisataId  Int?
 
   @@map("fasilitas")
 }
