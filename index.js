@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const cors = require("cors");
-const bodyParser = require('body-parser')
+const bodyParser = require("body-parser");
 const errorHanding = require("./middlewares/errorHanding");
 
 app.use(
@@ -12,8 +12,8 @@ app.use(
   })
 );
 app.use(cors());
-app.use(express.json()) // body-parser is now deprecated as of Express 4.16+
-app.use(express.urlencoded({ extended: false }))
+app.use(express.json()); // body-parser is now deprecated as of Express 4.16+
+app.use(express.urlencoded({ extended: false }));
 //Ini buat error Handingling
 app.use(errorHanding);
 
@@ -25,11 +25,11 @@ app.get("/", (req, res) => {
   });
 });
 
-// app.use("*", (req, res) => {
-//   return res.status(404).json({
-//     error: "End Poinst is Not Register Not Found 404",
-//   });
-// });
+app.use("*", (req, res) => {
+  return res.status(404).json({
+    error: "End Poinst is Not Register Not Found 404",
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is Running at PORT ${PORT}`);

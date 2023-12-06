@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const imageKit = require("../utils/imageKit"); // Your ImageKit integration module
 const path = require("path");
 const utils = require("../utils");
+const { log } = require("console");
 
 const getAllWisatas = async (req, res, next) => {
   let { page = 1, limit = 10 } = req.query; //menghasilkan string
@@ -127,7 +128,7 @@ const updateWisata = async (req, res, next) => {
     req.body;
 
   const nameSlug = await utils.createSlug(title);
-
+  console.log(req.body);
   try {
     // Upload image using Multer and ImageKit
     const image = req.file;

@@ -28,7 +28,6 @@ const getAllHotels = async (req, res, next) => {
       total_data: resultCount,
       data: allHotels,
     });
-
   } catch (error) {
     next(error);
   }
@@ -56,9 +55,8 @@ const createHotel = async (req, res, next) => {
   const { title, deskripsi, linkmap, alamat, nohp, harga_min, harga_max } =
     req.body;
 
-  const nameSlug = await utils.createSlug(title);
-
   try {
+    console.log(req.body);
     // Upload image using Multer and ImageKit
     const image = req.file;
     if (!image) {
@@ -71,7 +69,7 @@ const createHotel = async (req, res, next) => {
       fileName: nameFile,
       file: strFile,
     });
-
+    const nameSlug = await utils.createSlug(title);
     // Create hotel with image URL and ImageKit fileId
     const newHotel = await prisma.hotel.create({
       data: {
@@ -94,7 +92,7 @@ const createHotel = async (req, res, next) => {
         nama: nameFile,
         hotelId: hotelId,
         idImagekit: fileId,
-        wisataId: 0,
+        wisataId: null,
         url: url,
       },
     });
@@ -159,12 +157,12 @@ const updateHotel = async (req, res, next) => {
     });
 
     const createImage = await prisma.image.update({
-      where: { id: hotelId },
+      where: { hotelId: hotelId },
       data: {
         nama: nameFile,
         hotelId: hotelId,
         idImagekit: fileId,
-        wisataId: 0,
+        wisataId: null,
         url: url,
       },
     });
