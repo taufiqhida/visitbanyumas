@@ -110,6 +110,7 @@ model Hotel {
   nohp      BigInt
   harga_min BigInt
   harga_max BigInt
+  popular   Float
   rating    Float
   check_in  DateTime
   check_out DateTime
@@ -140,6 +141,7 @@ model Wisata {
   rating           Float
   jam_buka         DateTime
   jam_tutup        DateTime
+  popular          Float
   kecamatanId      Int
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
