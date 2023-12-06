@@ -101,9 +101,9 @@ model Fasilitas {
 
 // table
 model Hotel {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   title     String
-  slug      String   @unique
+  slug      String  @unique
   deskripsi String
   linkmap   String
   alamat    String
@@ -112,8 +112,8 @@ model Hotel {
   harga_max BigInt
   isPopular Boolean
   rating    Float
-  check_in  DateTime
-  check_out DateTime
+  check_in  String
+  check_out String
 
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
@@ -139,8 +139,8 @@ model Wisata {
   harga_min        BigInt
   harga_max        BigInt
   rating           Float
-  jam_buka         DateTime
-  jam_tutup        DateTime
+  jam_buka         String
+  jam_tutup        String
   isPopular        Boolean
   kecamatanId      Int
   createdAt        DateTime           @default(now()) @map("createdAt")
