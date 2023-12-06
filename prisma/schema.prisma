@@ -110,7 +110,7 @@ model Hotel {
   nohp      BigInt
   harga_min BigInt
   harga_max BigInt
-  popular   Boolean
+  isPopular Boolean
   rating    Float
   check_in  DateTime
   check_out DateTime
@@ -141,7 +141,7 @@ model Wisata {
   rating           Float
   jam_buka         DateTime
   jam_tutup        DateTime
-  popular          Boolean
+  isPopular        Boolean
   kecamatanId      Int
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
@@ -159,4 +159,6 @@ model Wisata_Has_Hotel {
   wisataId Int?
   Hotel    Hotel?  @relation(fields: [hotelId], references: [id])
   hotelId  Int?
+
+  @@map("wisataHasHotel")
 }
