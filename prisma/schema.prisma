@@ -111,6 +111,7 @@ model Hotel {
   harga_min BigInt
   harga_max BigInt
   isPopular Boolean
+  jarak     Int
   rating    Float
   check_in  String
   check_out String
@@ -138,6 +139,7 @@ model Wisata {
   nohp             BigInt
   harga_min        BigInt
   harga_max        BigInt
+  jarak            Int
   rating           Float
   jam_buka         String
   jam_tutup        String
