@@ -43,13 +43,14 @@ module.exports = {
     },
     update: async (req, res, next)=>{
         try{
+            const namaSlug = await utils.createSlug(req.body.slug);
             const data = await kecamatan.update({
                 where: {
                     id : parseInt(req.params.id)
                 },
                 data:{
                     nama : req.body.nama,
-                    slug: req.body.title.replace(/\s+/g, "-"),
+                    slug : namaSlug,
                 }
             })
 

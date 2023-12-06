@@ -49,11 +49,12 @@ model Image {
   idImagekit String @unique
   nama       String
   url        String
+  Hotel     Hotel?  @relation(fields: [hotelId], references: [id])
   hotelId    Int?
+  Wisata Wisata? @relation(fields: [wisataId], references: [id])
   wisataId   Int?
 
-  hotel  Hotel?  @relation(fields: [hotelId], references: [id])
-  wisata Wisata? @relation(fields: [wisataId], references: [id])
+
 
   @@map("images")
 }
@@ -80,9 +81,9 @@ model Hotel {
   deskripsi        String
   linkmap          String
   alamat           String
-  nohp             BigInt
-  harga_min        BigInt
-  harga_max        BigInt
+  nohp             String
+  harga_min        Int
+  harga_max        Int
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
   Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
@@ -102,9 +103,9 @@ model Wisata {
   deskripsi        String
   linkmap          String
   alamat           String
-  nohp             BigInt
-  harga_min        BigInt
-  harga_max        BigInt
+  nohp             String
+  harga_min        Int
+  harga_max        Int
   kecamatanId      Int
   createdAt        DateTime           @default(now()) @map("createdAt")
   updatedAt        DateTime           @updatedAt @map("updatedAt")
