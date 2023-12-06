@@ -44,83 +44,103 @@ model Kecamatan {
 }
 
 // table
-model Image {
+model Image_wisata {
+  id         Int    @id @default(autoincrement())
+  idImagekit String @unique
+  nama       String
+  url        String
+  wisataId   Int?
+
+  wisata Wisata? @relation(fields: [wisataId], references: [id])
+
+  @@map("image_wisata")
+}
+
+// table
+model Image_hotel {
   id         Int    @id @default(autoincrement())
   idImagekit String @unique
   nama       String
   url        String
   hotelId    Int?
-  wisataId   Int?
 
-  hotel  Hotel?  @relation(fields: [hotelId], references: [id])
-  wisata Wisata? @relation(fields: [wisataId], references: [id])
+  hotel Hotel? @relation(fields: [hotelId], references: [id])
 
-  @@map("images")
+  @@map("image_hotel")
+}
+
+// table
+model Image_fasilitas {
+  id          Int    @id @default(autoincrement())
+  idImagekit  String @unique
+  nama        String
+  url         String
+  fasilitasId Int?
+
+  fasilitas Fasilitas? @relation(fields: [fasilitasId], references: [id])
+
+  @@map("image_fasilitas")
 }
 
 // table
 model Fasilitas {
-  id        Int     @id @default(autoincrement())
-  nama      String
-  is_active Boolean @map("is_active")
-  jumlah    Int
-  Hotel     Hotel?  @relation(fields: [hotelId], references: [id])
-  hotelId   Int?
-  Wisata    Wisata? @relation(fields: [wisataId], references: [id])
-  wisataId  Int?
+  id              Int               @id @default(autoincrement())
+  nama            String
+  is_active       Boolean           @map("is_active")
+  jumlah          Int
+  Hotel           Hotel?            @relation(fields: [hotelId], references: [id])
+  hotelId         Int?
+  Wisata          Wisata?           @relation(fields: [wisataId], references: [id])
+  wisataId        Int?
+  image_fasilitas Image_fasilitas[]
 
   @@map("fasilitas")
 }
 
 // table
 model Hotel {
-  id               Int                @id @default(autoincrement())
-  title            String
-  slug             String             @unique
-  deskripsi        String
-  linkmap          String
-  alamat           String
-  nohp             BigInt
-  harga_min        BigInt
-  harga_max        BigInt
-  createdAt        DateTime           @default(now()) @map("createdAt")
-  updatedAt        DateTime           @updatedAt @map("updatedAt")
-  Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
-  kecamatanId      Int
-  image            Image[]
-  wisata_has_hotel wisata_has_hotel[]
-  fasilitas        Fasilitas[]
+  id          Int           @id @default(autoincrement())
+  title       String
+  slug        String        @unique
+  deskripsi   String
+  linkmap     String
+  alamat      String
+  rating      Int
+  check_in    DateTime
+  check_out   DateTime
+  nohp        BigInt
+  harga_min   BigInt
+  harga_max   BigInt
+  createdAt   DateTime      @default(now()) @map("createdAt")
+  updatedAt   DateTime      @updatedAt @map("updatedAt")
+  Kecamatan   Kecamatan     @relation(fields: [kecamatanId], references: [id])
+  kecamatanId Int
+  image_hotel Image_hotel[]
+  fasilitas   Fasilitas[]
 
   @@map("hotels")
 }
 
 // table
 model Wisata {
-  id               Int                @id @default(autoincrement())
-  title            String
-  slug             String             @unique
-  deskripsi        String
-  linkmap          String
-  alamat           String
-  nohp             BigInt
-  harga_min        BigInt
-  harga_max        BigInt
-  kecamatanId      Int
-  createdAt        DateTime           @default(now()) @map("createdAt")
-  updatedAt        DateTime           @updatedAt @map("updatedAt")
-  Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
-  image            Image[]
-  wisata_has_hotel wisata_has_hotel[]
-  fasilitas        Fasilitas[]
+  id           Int            @id @default(autoincrement())
+  title        String
+  slug         String         @unique
+  deskripsi    String
+  linkmap      String
+  alamat       String
+  rating       Int
+  jam_buka     DateTime
+  jam_tutup    DateTime
+  nohp         BigInt
+  harga_min    BigInt
+  harga_max    BigInt
+  kecamatanId  Int
+  createdAt    DateTime       @default(now()) @map("createdAt")
+  updatedAt    DateTime       @updatedAt @map("updatedAt")
+  Kecamatan    Kecamatan      @relation(fields: [kecamatanId], references: [id])
+  image_wisata Image_wisata[]
+  fasilitas    Fasilitas[]
 
   @@map("wisatas")
-}
-
-model wisata_has_hotel {
-  id       Int  @id @default(autoincrement())
-  hotelId  Int?
-  wisataId Int?
-
-  hotel  Hotel?  @relation(fields: [hotelId], references: [id])
-  wisata Wisata? @relation(fields: [wisataId], references: [id])
 }
