@@ -72,17 +72,27 @@ model Image_hotel {
 }
 
 // table
-model Fasilitas {
+model Fasilitas_Hotel {
   id        Int     @id @default(autoincrement())
   nama      String
   is_active Boolean @map("is_active")
   jumlah    Int
   Hotel     Hotel?  @relation(fields: [hotelId], references: [id])
   hotelId   Int?
-  Wisata    Wisata? @relation(fields: [wisataId], references: [id])
+
+  @@map("fasilitasHotel")
+}
+
+// table
+model Fasilitas_Wisata {
+  id        Int     @id @default(autoincrement())
+  nama      String
+  is_active Boolean @map("is_active")
+  jumlah    Int
+  wisata    Wisata? @relation(fields: [wisataId], references: [id])
   wisataId  Int?
 
-  @@map("fasilitas")
+  @@map("fasilitaswisata")
 }
 
 // table
@@ -107,7 +117,7 @@ model Hotel {
   Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
   kecamatanId      Int
   image_hotel      Image_hotel[]
-  fasilitas        Fasilitas[]
+  fasilitas_hotel  Fasilitas_Hotel[]
   wisata_has_hotel Wisata_Has_Hotel[]
   Image_wisata     Image_wisata[]
 
@@ -135,7 +145,7 @@ model Wisata {
   updatedAt        DateTime           @updatedAt @map("updatedAt")
   Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
   image_wisata     Image_wisata[]
-  fasilitas        Fasilitas[]
+  fasilitas_wisata Fasilitas_Wisata[]
   wisata_has_hotel Wisata_Has_Hotel[]
 
   @@map("wisatas")
