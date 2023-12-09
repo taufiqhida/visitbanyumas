@@ -73,26 +73,50 @@ model Image_hotel {
 
 // table
 model Fasilitas_Hotel {
-  id        Int     @id @default(autoincrement())
-  nama      String
-  is_active Boolean @map("is_active")
-  jumlah    Int
-  Hotel     Hotel?  @relation(fields: [hotelId], references: [id])
-  hotelId   Int?
+  id                    Int                     @id @default(autoincrement())
+  nama                  String
+  is_active             Boolean                 @map("is_active")
+  jumlah                Int
+  Hotel                 Hotel?                  @relation(fields: [hotelId], references: [id])
+  hotelId               Int?
+  fasilitas_hotel_image Fasilitas_Hotel_image[]
 
   @@map("fasilitasHotel")
 }
 
 // table
 model Fasilitas_Wisata {
-  id        Int     @id @default(autoincrement())
-  nama      String
-  is_active Boolean @map("is_active")
-  jumlah    Int
-  wisata    Wisata? @relation(fields: [wisataId], references: [id])
-  wisataId  Int?
+  id                     Int                      @id @default(autoincrement())
+  nama                   String
+  is_active              Boolean                  @map("is_active")
+  jumlah                 Int
+  wisata                 Wisata?                  @relation(fields: [wisataId], references: [id])
+  wisataId               Int?
+  fasilitas_wisata_image Fasilitas_Wisata_image[]
 
   @@map("fasilitaswisata")
+}
+
+model Fasilitas_Hotel_image {
+  id                Int              @id @default(autoincrement())
+  idImagekit        String           @unique
+  nama              String
+  url               String
+  Fasilitas_Hotel   Fasilitas_Hotel? @relation(fields: [fasilitas_HotelId], references: [id])
+  fasilitas_HotelId Int?
+
+  @@map("Fasilitas_Hotel_image")
+}
+
+model Fasilitas_Wisata_image {
+  id                 Int               @id @default(autoincrement())
+  idImagekit         String            @unique
+  nama               String
+  url                String
+  Fasilitas_Wisata   Fasilitas_Wisata? @relation(fields: [fasilitas_WisataId], references: [id])
+  fasilitas_WisataId Int?
+
+  @@map("Fasilitas_Wisita_image")
 }
 
 // table
