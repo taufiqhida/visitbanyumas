@@ -114,14 +114,14 @@ model Hotel {
   deskripsi      String
   linkmap        String
   alamat         String
-  nohp           BigInt
-  hargaMin       BigInt           @map("harga_min")
-  hargaMax       BigInt           @map("harga_max")
+  nohp           String
+  hargaMin       String           @map("hargaMin")
+  hargaMax       String           @map("hargaMax")
   isPopular      Boolean
   jarak          Int
   rating         Float
-  checkIn        String           @map("check_in")
-  checkOut       String           @map("check_out")
+  checkIn        String           @map("checkIn")
+  checkOut       String           @map("checkOut")
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
   kecamatan      Kecamatan        @relation(fields: [kecamatanId], references: [id])
@@ -140,9 +140,9 @@ model Wisata {
   deskripsi       String
   linkmap         String
   alamat          String
-  nohp            BigInt
-  hargaMin        BigInt            @map("harga_min")
-  hargaMax        BigInt            @map("harga_max")
+  nohp            String
+  hargaMin        String            @map("hargaMin")
+  hargaMax        String            @map("hargaMax")
   jarak           Int
   rating          Float
   jamBuka         String            @map("jam_buka")
@@ -163,4 +163,6 @@ model WisataHasHotel {
   id     Int      @id @default(autoincrement())
   wisata Wisata[]
   hotel  Hotel[]
+
+  @@map("WisataHasHotel")
 }

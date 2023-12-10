@@ -28,7 +28,6 @@ const getAllHotels = async (req, res, next) => {
       total_data: resultCount,
       data: allHotels,
     });
-
   } catch (error) {
     next(error);
   }

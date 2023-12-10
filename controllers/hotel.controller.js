@@ -1,276 +1,279 @@
-const {hotel, image} = require("../models"),
-    multer = require('multer'),
-    path = require('path'),
-    utils= require("../utils")
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+const multer = require("multer");
+const { v4: uuidv4 } = require("uuid");
+const imageKit = require("../utils/imageKit"); // Your ImageKit integration module
+const path = require("path");
+const utils = require("../utils");
 
-function generateFilter(props) {
-    let { allowedMimeTypes } = props;
-    return multer({
-        fileFilter: (req, file, callback) => {
-            if (!allowedMimeTypes.includes(file.mimetype)) {
-                const err = new Error(`Only ${allowedMimeTypes.join(', ')} allowed to upload!`);
-                return callback(err, false);
-            }
-            callback(null, true);
-        },
-        onError: (err, next) => {
-            next(err);
-        }
+const getAllHotels = async (req, res, next) => {
+  let { page = 1, limit = 10 } = req.query; // menghasilkan string
+  let skip = (page - 1) * limit;
+  console.log(req.query);
+  try {
+    const allHotels = await prisma.hotel.findMany({
+      take: parseInt(limit),
+      skip: skip,
     });
-}
 
-module.exports={
-    upload: generateFilter({
-        allowedMimeTypes: ['image/png', 'image/jpeg']
-    }),
-    create: async(req, res, next)=>{
-        try {
-            const {title, deskripsi, linkmap, alamat, nohp, harga_min, harga_max} = req.body
+    const resultCount = await prisma.hotel.count(); // integer jumlah total data wisata
 
-            const uploadFiles = async (files, hotelId, nama) => {
-                try {
-                  const gambarPromises = files.map(async (file) => {
-                    let strFile = file.buffer.toString("base64");
+    // generated total page
+    const totalPage = Math.ceil(resultCount / limit);
 
-                    let { url, fileId } = await utils.imageKit.upload({
-                      fileName: Date.now() + path.extname(file.originalname),
-                      file: strFile,
-                    });
+    res.status(200).json({
+      success: true,
+      current_page: parseInt(page),
+      total_page: totalPage,
+      total_data: resultCount,
+      data: allHotels,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-                    const images = await image.create({
-                      data: {
-                        idImagekit: fileId,
-                        nama: nama + path.extname(file.originalname),
-                        url,
-                        hotelId: hotelId,
-                      },
-                    });
+const getHotelById = async (req, res, next) => {
+  const hotelId = parseInt(req.params.id);
+  console.log(hotelId);
+  try {
+    const hotel = await prisma.hotel.findUnique({
+      where: { id: hotelId },
+    });
 
-            return images;
-          });
-
-          return Promise.all(gambarPromises);
-        } catch (err) {
-          throw err;
-        }
-      };
-        const nameSlug = await utils.createSlug(title)
-
-            const newHotel = await hotel.create({
-                data : {
-                    title: title,
-                    deskripsi : deskripsi,
-                    linkmap: linkmap,
-                    alamat: alamat,
-                    nohp:nohp,
-                    harga_min : harga_min,
-                    harga_max: harga_max,
-                    kecamatanId : parseInt(req.body.kecamatanId),
-                    slug : nameSlug,
-                    image: images
-                }
-            })
-
-            uploadFiles(req.files, newHotel.id, newHotel.title)
-
-            res.status(200).json({
-                newHotel
-            })
-            } catch (error) {
-
-            return next(error)
-        }
-    },
-    getHotelAll: async(req, res, next)=>{
-        try {
-            let { page = 1, limit = 10, search, kecamatan, popular,  latest } = req.query
-            let skip = ( page - 1 ) * limit
-            let whereCondition = {}
-            if (search) {
-                whereCondition.OR = [
-                  { title: { contains: search } },
-                ]
-            }
-            if (kecamatan) {
-                const kecamatans = Array.isArray(kecamatan) ? kecamatan : [kecamatan]
-                whereCondition = {
-                    inKecamatan: {
-                        slug: {
-                            in: kecamatans
-                        }
-                    }
-                }
-            }
-            let orderByCondition = []
-
-            if(latest) {
-                orderByCondition = [
-                    {
-                        createdAt: 'desc'
-                    }
-                ]
-            }
-            if(popular) {
-                orderByCondition = [
-                    {
-                        taken: 'desc'
-                    }
-                ]
-            }
-
-
-
-            const getAllHotel = await hotel.findMany({
-                take: parseInt(limit),
-                skip: skip,
-                where: whereCondition,
-                orderBy: orderByCondition,
-            });
-            const resultCount = await hotel.count({ where: whereCondition })
-            const totalPage = Math.ceil(resultCount / limit)
-            let message = "Berhasil mengambil data hotel"
-
-            if (search) {
-                message += ` berdasarkan kata kunci '${search}'`
-            }
-
-            if (kecamatan) {
-                message += ` berdasarkan kecamatan '${kecamatan}'`
-            }
-            if (popular) {
-                message += ` berdasarkan popular`
-            }
-
-            if (latest) {
-                message += ` berdasarkan terbaru`
-            }
-
-            if (resultCount === 0) {
-                return res.status(404).json("Tidak ada data Hotel")
-            }
-
-            const data =  getAllHotel.map((hotel)=>{
-                return{
-                    id: hotel.id,
-                    title : hotel.title,
-                    slug: hotel.slug,
-                    deskripsi: hotel.deskripsi,
-                    linkmap: hotel.linkmap,
-                    alamat: hotel.alamat,
-                    nohp : parseInt(hotel.nohp),
-                    harga_min : parseInt(hotel.harga_min),
-                    harga_max : parseInt(hotel.harga_max),
-                }
-            })
-
-            return res.status(200).json({
-            message: message,
-            data: data,
-            pagination: {
-                currentPage: parseInt(page),
-                totalPage: totalPage,
-                totalData: resultCount,
-            }
-        });
-        } catch (error) {
-            return next(error)
-        }
-    },
-    getHotel: async(req, res, next)=>{
-        try {
-          const getHotel = await hotel.findFirst({
-            where:{
-                id: parseInt(req.params.id)
-            }
-          })
-          if(!getHotel){
-              return res.status(404).json(`Tidak ada hotel`)
-          }
-          
-          return res.status(200).json({
-            getHotel
-          })
-        } catch (error) {
-            return next(200)
-        }
-    },
-    updateHotel : async(req, res, next) =>{
-        try {
-            const {title, deskripsi, linkmap, alamat, nohp, harga_min, harga_max, kecamatanId} = req.body
-                    const nameSlug = await utils.createSlug(title)
-            const updateHotel = await hotel.update({
-                where:{
-                    id: parseInt(req.params.id)
-                },
-                data:{
-                    title,
-                    deskripsi,
-                    linkmap,
-                    alamat,
-                    nohp,
-                    harga_min,
-                    harga_max,
-                    kecamatanId,
-                    slug : req.body.title.replace(/\s+/g, "-"),
-                }
-            })
-            return res.status(200).json({
-                updateHotel
-              })
-        } catch (error) {
-            
-        }
-    },
-    destroyHotel : async(req, res, next)=>{
-            console.log(req.params)
-        try {
-             const getById = await  hotel.findUnique({
-                 where:{
-                    id: parseInt(req.params.id)
-                 }
-             })
-            if(!getById){
-                 return res.status(404).json("Hotel tidak ditemukkan")
-            }
-            await hotel.delete({
-                where: {
-                    id: parseInt(req.params.id)
-                }
-            })
-        return res.status(200).json("Hotel berhasil dihapus")
-        } catch (error) {
-            return next(error)
-        }
-    }
-}
-
-
-async function uploadFiles(files, hotelId, hotelTitle) {
-    const uploadedImages = [];
-
-    for (const file of files) {
-        try {
-            let strFile = file.buffer.toString("base64");
-
-            let { url, fileId } = await utils.imageKit.upload({
-                fileName: Date.now() + path.extname(file.originalname),
-                file: strFile,
-            });
-
-            const imageRecord = await image.create({
-                data: {
-                    idImagekit: fileId,
-                    nama: hotelTitle + path.extname(file.originalname),
-                    url,
-                    hotelId: hotelId,
-                },
-            });
-
-            uploadedImages.push(imageRecord);
-        } catch (err) {
-            throw err;
-        }
+    if (!hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
     }
 
-    return uploadedImages;
-}
+    res.status(200).json(hotel);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const createHotel = async (req, res, next) => {
+  console.log(req.body);
+  const {
+    title,
+    deskripsi,
+    linkmap,
+    alamat,
+    nohp,
+    hargaMin,
+    hargaMax,
+    isPopular,
+    jarak,
+    rating,
+    checkIn,
+    checkOut,
+  } = req.body;
+
+  const nameSlug = await utils.createSlug(title);
+
+  try {
+    // Upload image using Multer and ImageKit
+    const image = req.file;
+    if (!image) {
+      return res.status(400).json({ message: "Image is required" });
+    }
+
+    const strFile = image.buffer.toString("base64");
+    const nameFile = uuidv4() + path.extname(image.originalname);
+    const { url, fileId } = await imageKit.upload({
+      fileName: nameFile,
+      file: strFile,
+    });
+
+    // Create hotel with image URL and ImageKit fileId
+    const newHotel = await prisma.hotel.create({
+      data: {
+        title: title,
+        deskripsi: deskripsi,
+        linkmap: linkmap,
+        alamat: alamat,
+        nohp: nohp,
+        hargaMin: hargaMin,
+        hargaMax: hargaMax,
+        isPopular: Boolean(isPopular),
+        jarak: parseInt(jarak),
+        rating: parseFloat(rating),
+        checkIn: checkIn,
+        checkOut: checkOut,
+        kecamatanId: parseInt(req.body.kecamatanId),
+        slug: nameSlug,
+      },
+    });
+
+    const hotelId = newHotel.id;
+
+    const createImage = await prisma.imageHotel.create({
+      data: {
+        nama: nameFile,
+        hotelId: hotelId,
+        idImagekit: fileId,
+        url: url,
+      },
+    });
+
+    const responseData = {
+      success: true,
+      message: "Succesfully create data hotel",
+      data: {
+        id: newHotel.id,
+        title: newHotel.title,
+        deskripsi: newHotel.deskripsi,
+        linkmap: newHotel.linkmap,
+        alamat: newHotel.alamat,
+        isPopular: newHotel.isPopular,
+        jarak: newHotel.jarak,
+        rating: parseFloat(newHotel.rating),
+        checkIn: newHotel.checkIn,
+        checkOut: newHotel.checkOut,
+        nohp: String(newHotel.nohp),
+        hargaMin: String(newHotel.hargaMin),
+        hargaMax: String(newHotel.hargaMax),
+        kecamatanId: String(newHotel.kecamatanId),
+        slug: newHotel.nameSlug,
+      },
+    };
+    res.status(201).json(responseData);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};
+
+const updateHotel = async (req, res, next) => {
+  const hotelId = parseInt(req.params.id);
+  const {
+    title,
+    deskripsi,
+    linkmap,
+    alamat,
+    nohp,
+    hargaMin,
+    hargaMax,
+    isPopular,
+    jarak,
+    rating,
+    checkIn,
+    checkOut,
+  } = req.body;
+
+  const nameSlug = await utils.createSlug(title);
+
+  try {
+    // Upload image using Multer and ImageKit
+    const image = req.file;
+    if (!image) {
+      return res.status(400).json({ message: "Image is required" });
+    }
+
+    const strFile = image.buffer.toString("base64");
+    const nameFile = uuidv4() + path.extname(image.originalname);
+    const { url, fileId } = await imageKit.upload({
+      fileName: nameFile,
+      file: strFile,
+    });
+
+    const updatedHotel = await prisma.hotel.update({
+      where: { id: hotelId },
+      data: {
+        id: newHotel.id,
+        title: newHotel.title,
+        deskripsi: newHotel.deskripsi,
+        linkmap: newHotel.linkmap,
+        alamat: newHotel.alamat,
+        isPopular: newHotel.isPopular,
+        jarak: newHotel.jarak,
+        rating: parseFloat(newHotel.rating),
+        checkIn: newHotel.checkIn,
+        checkOut: newHotel.checkOut,
+        nohp: String(newHotel.nohp),
+        hargaMin: String(newHotel.hargaMin),
+        hargaMax: String(newHotel.hargaMax),
+        kecamatanId: String(newHotel.kecamatanId),
+        slug: newHotel.nameSlug,
+      },
+    });
+
+    const createImage = await prisma.imageHotel.update({
+      where: { id: hotelId },
+      data: {
+        nama: nameFile,
+        hotelId: hotelId,
+        idImagekit: fileId,
+        url: url,
+      },
+    });
+
+    if (!updatedHotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+
+    const responseData = {
+      success: true,
+      message: "Succesfully update data hotel",
+      data: {
+        id: newHotel.id,
+        title: newHotel.title,
+        deskripsi: newHotel.deskripsi,
+        linkmap: newHotel.linkmap,
+        alamat: newHotel.alamat,
+        isPopular: newHotel.isPopular,
+        jarak: newHotel.jarak,
+        rating: parseFloat(newHotel.rating),
+        checkIn: newHotel.checkIn,
+        checkOut: newHotel.checkOut,
+        nohp: String(newHotel.nohp),
+        hargaMin: String(newHotel.hargaMin),
+        hargaMax: String(newHotel.hargaMax),
+        kecamatanId: String(newHotel.kecamatanId),
+        slug: newHotel.nameSlug,
+      },
+    };
+    res.status(201).json(responseData);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteHotel = async (req, res, next) => {
+  const hotelId = parseInt(req.params.id);
+
+  try {
+    const findImage = await prisma.imageHotel.findUnique({
+      where: { id: hotelId },
+    });
+
+    // Delete image from ImageKit
+    const fileId = findImage.idImagekit;
+    await imageKit.deleteFile(fileId);
+
+    const deletedHotel = await prisma.hotel.delete({
+      where: { id: hotelId },
+    });
+
+    const deleteImage = await prisma.imageHotel.delete({
+      where: { id: hotelId },
+    });
+
+    if (!deletedHotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+    res.status(202).json({
+      status: true,
+      message: "Deleted data hotel sucessfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  getAllHotels,
+  getHotelById,
+  createHotel, // Use Multer middleware for image upload
+  updateHotel,
+  deleteHotel,
+};
