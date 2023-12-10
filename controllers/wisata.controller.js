@@ -158,6 +158,7 @@ const updateWisata = async (req, res, next) => {
     rating,
     jamBuka,
     jamTutup,
+    kecamatanId,
   } = req.body;
 
   const nameSlug = await utils.createSlug(title);
@@ -214,21 +215,20 @@ const updateWisata = async (req, res, next) => {
       success: true,
       message: "Succesfully update data hotel",
       data: {
-        id: newWisata.id,
-        title: newWisata.title,
-        deskripsi: newWisata.deskripsi,
-        linkmap: newWisata.linkmap,
-        alamat: newWisata.alamat,
-        isPopular: newWisata.isPopular,
-        jarak: newWisata.jarak,
-        rating: parseFloat(newWisata.rating),
-        jamBuka: newWisata.jamBuka,
-        jamTutup: newWisata.jamTutup,
-        nohp: String(newWisata.nohp),
-        hargaMin: String(newWisata.hargaMin),
-        hargaMax: String(newWisata.hargaMax),
-        kecamatanId: String(newWisata.kecamatanId),
-        slug: newWisata.nameSlug,
+        title: title,
+        deskripsi: deskripsi,
+        linkmap: linkmap,
+        alamat: alamat,
+        isPopular: isPopular,
+        jarak: parseInt(jarak),
+        rating: parseFloat(rating),
+        jamBuka: jamBuka,
+        jamTutup: jamTutup,
+        nohp: String(nohp),
+        hargaMin: String(hargaMin),
+        hargaMax: String(hargaMax),
+        kecamatanId: parseInt(kecamatanId),
+        slug: nameSlug,
       },
     };
     res.status(201).json(responseData);
