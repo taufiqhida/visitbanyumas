@@ -17,6 +17,9 @@ app.use(express.urlencoded({ extended: false }));
 //Ini buat error Handingling
 app.use(errorHanding);
 
+app.get("/test-connection", (req, res) => {
+  return res.status(200).send("ok");
+});
 const router = require("./routers");
 app.use("/api/v1", router);
 app.get("/", (req, res) => {
@@ -29,9 +32,6 @@ app.use("*", (req, res) => {
   return res.status(404).json({
     error: "End Poinst is Not Register Not Found 404",
   });
-});
-app.get("/test-connection", (req, res) => {
-  return res.status(200).send("ok");
 });
 
 app.listen(PORT, () => {
