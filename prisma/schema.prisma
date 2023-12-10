@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,56 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Table Admin
-model admin {
+model Admin {
   id        Int      @id @default(autoincrement())
   username  String   @unique
   password  String
-  createdAt DateTime @default(now()) @map("createdAt")
-  updatedAt DateTime @updatedAt @map("updatedAt")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("admins")
 }
 
-// Table
 model Ulasan {
   id     Int    @id @default(autoincrement())
   nama   String
   tempat String
   ulasan String
 
-  @@map("ulasans")
+  @@map("ulasan")
 }
 
-// table
 model Kecamatan {
   id   Int    @id @default(autoincrement())
   nama String
   slug String @unique
 
-  hotel  Hotel[]
-  wisata Wisata[]
+  hotels  Hotel[]
+  wisatas Wisata[]
 
-  @@map("kecamatans")
+  @@map("kecamatan")
 }
 
-// table
-model Image_wisata {
+model ImageWisata {
   id         Int    @id @default(autoincrement())
   idImagekit String @unique
   nama       String
   url        String
-  hotelId    Int?
   wisataId   Int?
 
-  hotel  Hotel?  @relation(fields: [hotelId], references: [id])
   wisata Wisata? @relation(fields: [wisataId], references: [id])
 
   @@map("image_wisata")
 }
 
-// table
-model Image_hotel {
+model ImageHotel {
   id         Int    @id @default(autoincrement())
   idImagekit String @unique
   nama       String
@@ -71,116 +61,106 @@ model Image_hotel {
   @@map("image_hotel")
 }
 
-// table
-model Fasilitas_Hotel {
-  id                    Int                     @id @default(autoincrement())
+model FasilitasHotel {
+  id                   Int                   @id @default(autoincrement())
+  nama                 String
+  isActive             Boolean               @map("is_active")
+  jumlah               Int
+  hotel                Hotel?                @relation(fields: [hotelId], references: [id])
+  hotelId              Int?
+  fasilitasHotelImages FasilitasHotelImage[]
+
+  @@map("fasilitas_hotel")
+}
+
+model FasilitasWisata {
+  id                    Int                    @id @default(autoincrement())
   nama                  String
-  is_active             Boolean                 @map("is_active")
+  isActive              Boolean                @map("is_active")
   jumlah                Int
-  Hotel                 Hotel?                  @relation(fields: [hotelId], references: [id])
-  hotelId               Int?
-  fasilitas_hotel_image Fasilitas_Hotel_image[]
+  wisata                Wisata?                @relation(fields: [wisataId], references: [id])
+  wisataId              Int?
+  fasilitasWisataImages FasilitasWisataImage[]
 
-  @@map("fasilitasHotel")
+  @@map("fasilitas_wisata")
 }
 
-// table
-model Fasilitas_Wisata {
-  id                     Int                      @id @default(autoincrement())
-  nama                   String
-  is_active              Boolean                  @map("is_active")
-  jumlah                 Int
-  wisata                 Wisata?                  @relation(fields: [wisataId], references: [id])
-  wisataId               Int?
-  fasilitas_wisata_image Fasilitas_Wisata_image[]
+model FasilitasHotelImage {
+  id               Int             @id @default(autoincrement())
+  idImagekit       String          @unique
+  nama             String
+  url              String
+  fasilitasHotel   FasilitasHotel? @relation(fields: [fasilitasHotelId], references: [id])
+  fasilitasHotelId Int?
 
-  @@map("fasilitaswisata")
+  @@map("fasilitas_hotel_image")
 }
 
-model Fasilitas_Hotel_image {
+model FasilitasWisataImage {
   id                Int              @id @default(autoincrement())
   idImagekit        String           @unique
   nama              String
   url               String
-  Fasilitas_Hotel   Fasilitas_Hotel? @relation(fields: [fasilitas_HotelId], references: [id])
-  fasilitas_HotelId Int?
+  fasilitasWisata   FasilitasWisata? @relation(fields: [fasilitasWisataId], references: [id])
+  fasilitasWisataId Int?
 
-  @@map("Fasilitas_Hotel_image")
+  @@map("fasilitas_wisata_image")
 }
 
-model Fasilitas_Wisata_image {
-  id                 Int               @id @default(autoincrement())
-  idImagekit         String            @unique
-  nama               String
-  url                String
-  Fasilitas_Wisata   Fasilitas_Wisata? @relation(fields: [fasilitas_WisataId], references: [id])
-  fasilitas_WisataId Int?
-
-  @@map("Fasilitas_Wisita_image")
-}
-
-// table
 model Hotel {
-  id        Int     @id @default(autoincrement())
-  title     String
-  slug      String  @unique
-  deskripsi String
-  linkmap   String
-  alamat    String
-  nohp      BigInt
-  harga_min BigInt
-  harga_max BigInt
-  isPopular Boolean
-  jarak     Int
-  rating    Float
-  check_in  String
-  check_out String
+  id             Int              @id @default(autoincrement())
+  title          String
+  slug           String           @unique
+  deskripsi      String
+  linkmap        String
+  alamat         String
+  nohp           BigInt
+  hargaMin       BigInt           @map("harga_min")
+  hargaMax       BigInt           @map("harga_max")
+  isPopular      Boolean
+  jarak          Int
+  rating         Float
+  checkIn        String           @map("check_in")
+  checkOut       String           @map("check_out")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  kecamatan      Kecamatan        @relation(fields: [kecamatanId], references: [id])
+  kecamatanId    Int
+  imageHotel     ImageHotel[]
+  fasilitasHotel FasilitasHotel[]
+  wisataHasHotel WisataHasHotel[]
 
-  createdAt        DateTime           @default(now()) @map("createdAt")
-  updatedAt        DateTime           @updatedAt @map("updatedAt")
-  Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
-  kecamatanId      Int
-  image_hotel      Image_hotel[]
-  fasilitas_hotel  Fasilitas_Hotel[]
-  wisata_has_hotel Wisata_Has_Hotel[]
-  Image_wisata     Image_wisata[]
-
-  @@map("hotels")
+  @@map("hotel")
 }
 
-// table
 model Wisata {
-  id               Int                @id @default(autoincrement())
-  title            String
-  slug             String             @unique
-  deskripsi        String
-  linkmap          String
-  alamat           String
-  nohp             BigInt
-  harga_min        BigInt
-  harga_max        BigInt
-  jarak            Int
-  rating           Float
-  jam_buka         String
-  jam_tutup        String
-  isPopular        Boolean
-  kecamatanId      Int
-  createdAt        DateTime           @default(now()) @map("createdAt")
-  updatedAt        DateTime           @updatedAt @map("updatedAt")
-  Kecamatan        Kecamatan          @relation(fields: [kecamatanId], references: [id])
-  image_wisata     Image_wisata[]
-  fasilitas_wisata Fasilitas_Wisata[]
-  wisata_has_hotel Wisata_Has_Hotel[]
+  id              Int               @id @default(autoincrement())
+  title           String
+  slug            String            @unique
+  deskripsi       String
+  linkmap         String
+  alamat          String
+  nohp            BigInt
+  hargaMin        BigInt            @map("harga_min")
+  hargaMax        BigInt            @map("harga_max")
+  jarak           Int
+  rating          Float
+  jamBuka         String            @map("jam_buka")
+  jamTutup        String            @map("jam_tutup")
+  isPopular       Boolean
+  kecamatan       Kecamatan         @relation(fields: [kecamatanId], references: [id])
+  kecamatanId     Int
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  imageWisata     ImageWisata[]
+  fasilitasWisata FasilitasWisata[]
+  wisataHasHotel  WisataHasHotel[]
 
-  @@map("wisatas")
+  @@map("wisata")
 }
 
-model Wisata_Has_Hotel {
-  id       Int     @id @default(autoincrement())
-  Wisata   Wisata? @relation(fields: [wisataId], references: [id])
-  wisataId Int?
-  Hotel    Hotel?  @relation(fields: [hotelId], references: [id])
-  hotelId  Int?
-
-  @@map("wisataHasHotel")
+model WisataHasHotel {
+  id     Int      @id @default(autoincrement())
+  wisata Wisata[]
+  hotel  Hotel[]
 }
