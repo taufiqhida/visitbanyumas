@@ -30,6 +30,9 @@ app.use("*", (req, res) => {
     error: "End Poinst is Not Register Not Found 404",
   });
 });
+app.get("/test-connection", (req, res) => {
+  return res.status(200).send("ok");
+});
 
 app.listen(PORT, () => {
   console.log(`Server is Running at PORT ${PORT}`);
