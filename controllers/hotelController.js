@@ -7,23 +7,23 @@ const path = require("path");
 const utils = require("../utils");
 
 const getAllHotels = async (req, res, next) => {
-  let { page = 1, limit = 10 } = req.query; // menghasilkan string
+  let { page = 1, limit = 10 } = req.query; //menghasilkan string
   let skip = (page - 1) * limit;
-  console.log(req.query);
+
   try {
     const allHotels = await prisma.hotel.findMany({
       take: parseInt(limit),
       skip: skip,
     });
 
-    const resultCount = await prisma.hotel.count(); // integer jumlah total data wisata
+    const resultCount = await prisma.hotel.count(); //integer jumlah total data wisata
 
-    // generated total page
+    //generated total page
     const totalPage = Math.ceil(resultCount / limit);
 
     res.status(200).json({
       success: true,
-      current_page: parseInt(page),
+      current_page: page - 0, //ini -0 merubah menjadi integer
       total_page: totalPage,
       total_data: resultCount,
       data: allHotels,
@@ -35,7 +35,7 @@ const getAllHotels = async (req, res, next) => {
 
 const getHotelById = async (req, res, next) => {
   const hotelId = parseInt(req.params.id);
-  console.log(hotelId);
+
   try {
     const hotel = await prisma.hotel.findUnique({
       where: { id: hotelId },
@@ -52,21 +52,8 @@ const getHotelById = async (req, res, next) => {
 };
 
 const createHotel = async (req, res, next) => {
-  console.log(req.body);
-  const {
-    title,
-    deskripsi,
-    linkmap,
-    alamat,
-    nohp,
-    hargaMin,
-    hargaMax,
-    isPopular,
-    jarak,
-    rating,
-    checkIn,
-    checkOut,
-  } = req.body;
+  const { title, deskripsi, linkmap, alamat, nohp, harga_min, harga_max } =
+    req.body;
 
   const nameSlug = await utils.createSlug(title);
 
@@ -92,13 +79,8 @@ const createHotel = async (req, res, next) => {
         linkmap: linkmap,
         alamat: alamat,
         nohp: nohp,
-        hargaMin: hargaMin,
-        hargaMax: hargaMax,
-        isPopular: Boolean(isPopular),
-        jarak: parseInt(jarak),
-        rating: parseFloat(rating),
-        checkIn: checkIn,
-        checkOut: checkOut,
+        harga_min: parseInt(harga_min),
+        harga_max: parseInt(harga_max),
         kecamatanId: parseInt(req.body.kecamatanId),
         slug: nameSlug,
       },
@@ -106,11 +88,12 @@ const createHotel = async (req, res, next) => {
 
     const hotelId = newHotel.id;
 
-    const createImage = await prisma.imageHotel.create({
+    const createImage = await prisma.image.create({
       data: {
         nama: nameFile,
         hotelId: hotelId,
         idImagekit: fileId,
+        wisataId: 0,
         url: url,
       },
     });
@@ -124,14 +107,9 @@ const createHotel = async (req, res, next) => {
         deskripsi: newHotel.deskripsi,
         linkmap: newHotel.linkmap,
         alamat: newHotel.alamat,
-        isPopular: newHotel.isPopular,
-        jarak: newHotel.jarak,
-        rating: parseFloat(newHotel.rating),
-        checkIn: newHotel.checkIn,
-        checkOut: newHotel.checkOut,
         nohp: String(newHotel.nohp),
-        hargaMin: String(newHotel.hargaMin),
-        hargaMax: String(newHotel.hargaMax),
+        harga_min: String(newHotel.harga_min),
+        harga_max: String(newHotel.harga_max),
         kecamatanId: String(newHotel.kecamatanId),
         slug: newHotel.nameSlug,
       },
@@ -145,21 +123,8 @@ const createHotel = async (req, res, next) => {
 
 const updateHotel = async (req, res, next) => {
   const hotelId = parseInt(req.params.id);
-  const {
-    title,
-    deskripsi,
-    linkmap,
-    alamat,
-    nohp,
-    hargaMin,
-    hargaMax,
-    isPopular,
-    jarak,
-    rating,
-    checkIn,
-    checkOut,
-    kecamatanId,
-  } = req.body;
+  const { title, deskripsi, linkmap, alamat, nohp, harga_min, harga_max } =
+    req.body;
 
   const nameSlug = await utils.createSlug(title);
 
@@ -184,25 +149,21 @@ const updateHotel = async (req, res, next) => {
         deskripsi: deskripsi,
         linkmap: linkmap,
         alamat: alamat,
-        isPopular: isPopular,
-        jarak: parseInt(jarak),
-        rating: parseFloat(rating),
-        checkIn: checkIn,
-        checkOut: checkOut,
-        nohp: String(nohp),
-        hargaMin: String(hargaMin),
-        hargaMax: String(hargaMax),
-        kecamatanId: parseInt(kecamatanId),
+        nohp: nohp,
+        harga_min: parseInt(harga_min),
+        harga_max: parseInt(harga_max),
+        kecamatanId: parseInt(req.body.kecamatanId),
         slug: nameSlug,
       },
     });
 
-    const createImage = await prisma.imageHotel.update({
+    const createImage = await prisma.image.update({
       where: { id: hotelId },
       data: {
         nama: nameFile,
         hotelId: hotelId,
         idImagekit: fileId,
+        wisataId: 0,
         url: url,
       },
     });
@@ -215,20 +176,15 @@ const updateHotel = async (req, res, next) => {
       success: true,
       message: "Succesfully update data hotel",
       data: {
-        title: title,
-        deskripsi: deskripsi,
-        linkmap: linkmap,
-        alamat: alamat,
-        isPopular: isPopular,
-        jarak: parseInt(jarak),
-        rating: parseFloat(rating),
-        checkIn: checkIn,
-        checkOut: checkOut,
-        nohp: String(nohp),
-        hargaMin: String(hargaMin),
-        hargaMax: String(hargaMax),
-        kecamatanId: parseInt(kecamatanId),
-        slug: nameSlug,
+        title: updatedHotel.title,
+        deskripsi: updatedHotel.deskripsi,
+        linkmap: updatedHotel.linkmap,
+        alamat: updatedHotel.alamat,
+        nohp: String(updatedHotel.nohp),
+        harga_min: String(updatedHotel.harga_min),
+        harga_max: String(updatedHotel.harga_max),
+        kecamatanId: String(updatedHotel.kecamatanId),
+        slug: updatedHotel.nameSlug,
       },
     };
     res.status(201).json(responseData);
@@ -241,7 +197,7 @@ const deleteHotel = async (req, res, next) => {
   const hotelId = parseInt(req.params.id);
 
   try {
-    const findImage = await prisma.imageHotel.findUnique({
+    const findImage = await prisma.image.findUnique({
       where: { id: hotelId },
     });
 
@@ -253,7 +209,7 @@ const deleteHotel = async (req, res, next) => {
       where: { id: hotelId },
     });
 
-    const deleteImage = await prisma.imageHotel.delete({
+    const deleteImage = await prisma.image.delete({
       where: { id: hotelId },
     });
 
