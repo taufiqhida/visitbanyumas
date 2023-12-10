@@ -160,9 +160,11 @@ model Wisata {
 }
 
 model WisataHasHotel {
-  id     Int      @id @default(autoincrement())
-  wisata Wisata[]
-  hotel  Hotel[]
+  id       Int     @id @default(autoincrement())
+  Hotel    Hotel?  @relation(fields: [hotelId], references: [id])
+  hotelId  Int?
+  Wisata   Wisata? @relation(fields: [wisataId], references: [id])
+  wisataId Int?
 
   @@map("WisataHasHotel")
 }
